@@ -2,6 +2,7 @@ package cesi.ril;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -91,19 +92,21 @@ public class DemoJdbc {
 		String login = "mla";
 		String passwd = "mla";
 		Connection cn = null;
-		Statement st = null;
+		PreparedStatement st = null;
 		int nbChamp = 0;
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			cn = DriverManager.getConnection(url, login, passwd);
-			st = cn.createStatement();
 			
-			String sql = "Update `javadb` SET `personne` = '"+personne+"' WHERE `personne` = '"+where+"'";
-			System.out.println(sql);
-			nbChamp = st.executeUpdate(sql);
+			String sql = "Update `javadb` SET `personne` = ? WHERE `personne` = ?";
+			st = cn.prepareStatement(sql);
 			
-			System.out.println(nbChamp + " champs mis a jour");
+			st.setString(1, personne);
+			st.setString(2, where);
+			
+			nbChamp = st.executeUpdate();
+			System.out.println(nbChamp + " champs supprimés");
 		} catch (SQLException e){
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -123,17 +126,19 @@ public class DemoJdbc {
 		String login = "mla";
 		String passwd = "mla";
 		Connection cn = null;
-		Statement st = null;
+		PreparedStatement st = null;
 		int nbChamp = 0;
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			cn = DriverManager.getConnection(url, login, passwd);
-			st = cn.createStatement();
 			
-			String sql = "DELETE FROM `javadb` WHERE `personne` = '"+where+"'";
-			nbChamp = st.executeUpdate(sql);
+			String sql = "DELETE FROM `javadb` WHERE `personne` = ?";
+			st = cn.prepareStatement(sql);
 			
+			st.setString(1, where);
+			
+			nbChamp = st.executeUpdate();
 			System.out.println(nbChamp + " champs supprimés");
 		} catch (SQLException e){
 			e.printStackTrace();
